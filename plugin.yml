@@ -1,13 +1,13 @@
-name: Clans
+name: Pirates
 main: com.Satrosity.Clans.Clans
 version: 2.0.5
 commands:
-  team:
+  pirate:
     description: All team commands
     usage: |
            Incorrect usage of /<command>. Examples:
            /<command> - lists commands
-  t:
+  p:
     description: Sends a message to team members
     usage: |
            Incorrect usage of /<command>. Examples:
@@ -23,125 +23,125 @@ commands:
            Incorrect usage of /<command>. Examples:
            /<command> - lists commands
 permissions:
-    Clans.*:
+    Pirate.*:
         description: Gives access to all commands
         children:
-            Clans.kick: true
-            Clans.create: true
-            Clans.invite: true
-            Clans.accept: true
-            Clans.reject: true
-            Clans.list: true
-            Clans.info: true
-            Clans.online: true
-            Clans.tktoggle: true
-            Clans.kick: true
-            Clans.rankcreate: true
-            Clans.rankset: true
-            Clans.rankrename: true
-            Clans.rankinfo: true
-            Clans.rankpermission: true
-            Clans.rankdelete: true
-            Clans.disband: true
-            Clans.tag: true
-            Clans.color: true
-            Clans.motd: true
-            Clans.teamchat: true
-            Clans.leave: true
-            Clans.area.claim: true
-            Clans.area.info: true
-            Clans.area.upgrade: true
-            Clans.area.list: true
-            Clans.area.upgrade: true
-            Clans.area.list: true
-            Clans.area.capture: true
-            Clans.score: true
-            Clans.topscores: true
-            Clans.cape: true
-    Clans.kick:
+            Pirate.kick: true
+            Pirate.create: true
+            Pirate.invite: true
+            Pirate.accept: true
+            Pirate.reject: true
+            Pirate.list: true
+            Pirate.info: true
+            Pirate.online: true
+            Pirate.tktoggle: true
+            Pirate.kick: true
+            Pirate.rankcreate: true
+            Pirate.rankset: true
+            Pirate.rankrename: true
+            Pirate.rankinfo: true
+            Pirate.rankpermission: true
+            Pirate.rankdelete: true
+            Pirate.disband: true
+            Pirate.tag: true
+            Pirate.color: true
+            Pirate.motd: true
+            Pirate.teamchat: true
+            Pirate.leave: true
+            Pirate.area.claim: true
+            Pirate.area.info: true
+            Pirate.area.upgrade: true
+            Pirate.area.list: true
+            Pirate.area.upgrade: true
+            Pirate.area.list: true
+            Pirate.area.capture: true
+            Pirate.score: true
+            Pirate.topscores: true
+            Pirate.cape: true
+    Pirate.kick:
         description: Allows you to kick a user from your team.
         default: op
-    Clans.create:
+    Pirate.create:
         description: Allows you to create a team.
         default: op
-    Clans.invite:
+    Pirate.invite:
         description: Allows you to invite to a team.
         default: op
-    Clans.accept:
+    Pirate.accept:
         description: Allows you to join a team.
         default: op
-    Clans.reject:
+    Pirate.reject:
         description: Allows you to reject a team's invite.
         default: op
-    Clans.list:
+    Pirate.list:
         description: Allows you to list teams.
         default: op
-    Clans.info:
+    Pirate.info:
         description: Allows you to see a team's info.
         default: op
-    Clans.online:
+    Pirate.online:
         description: Allows you to see a team's online players.
         default: op
-    Clans.tktoggle:
+    Pirate.tktoggle:
         description: Allows you to toggle team killing options.
         default: op
-    Clans.rankcreate:
+    Pirate.rankcreate:
         description: Allows you to create a team rank.
         default: op
-    Clans.rankdelete:
+    Pirate.rankdelete:
         description: Allows you to create a team rank.
         default: op
-    Clans.rankset:
+    Pirate.rankset:
         description: Allows you to set a player's team rank.
         default: op
-    Clans.rankrename:
+    Pirate.rankrename:
         description: Allows you to rename a team rank.
         default: op
-    Clans.rankinfo:
+    Pirate.rankinfo:
         description: Allows you to see a rank's properties.
         default: op
-    Clans.rankpermission:
+    Pirate.rankpermission:
         description: Allows you to set a rank's permissions.
         default: op
-    Clans.disband:
+    Pirate.disband:
         description: Allows you to disband your team.
         default: op
-    Clans.tag:
+    Pirate.tag:
         description: Allows you to set your team's tag in chat.
         default: op
-    Clans.color:
+    Pirate.color:
         description: Allows you to set your team's color.
         default: op
-    Clans.motd:
+    Pirate.motd:
         description: Allows you to set your team's motd.
         default: op
-    Clans.teamchat:
+    Pirate.teamchat:
         description: Allows you to use team chat.
         default: op
-    Clans.leave:
+    Pirate.leave:
         description: Allows you to leave the team.
         default: op
-    Clans.area.claim:
+    Pirate.area.claim:
         description: Allows you to claim an area.
         default: op
-    Clans.area.info:
+    Pirate.area.info:
         description: Allows you to see area info.
         default: op
-    Clans.area.upgrade:
+    Pirate.area.upgrade:
         description: Allows you to upgrade an area.
         default: op
-    Clans.area.list:
+    Pirate.area.list:
         description: Allows you to see your captured areas.
         default: op
-    Clans.area.capture:
+    Pirate.area.capture:
         description: Allows you to besiege other team's areas.
         default: op
-    Clans.score:
+    Pirate.score:
         description: Allows to see the score of teams.
         default: op
-    Clans.topscores:
+    Pirate.topscores:
         description: Allows to see the top scoring teams.
         default: op
-    Clans.cape:
+    Pirate.cape:
         description: Allows to set the team cape.
         default: op
