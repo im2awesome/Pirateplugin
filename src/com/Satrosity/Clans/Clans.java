@@ -53,15 +53,11 @@ public class Clans extends JavaPlugin {
 	//Clans Data
 	private HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
 	private HashMap<String, Team> Teams = new HashMap<String, Team>(); 
-	private HashMap<String, TeamArea> Areas = new HashMap<String, TeamArea>();
-	private ArrayList<BlackArea> BlacklistedAreas = new ArrayList<BlackArea>();
 	
 
 	//Files
 	private File TeamsFile;
 	private File PlayersFile;
-	private File AreasFile;
-	private File BlacklistFile;
 
 	//Logger
 	private Logger log = Logger.getLogger("Minecraft");//Define your logger
@@ -73,10 +69,6 @@ public class Clans extends JavaPlugin {
 	private final ClansPlayerListener playerListener = new ClansPlayerListener(this);
 	private final ClansBlockListener blockListener = new ClansBlockListener(this);
 	
-	//Extras
-	private HashMap<Location,ResistantBlock> ResistBlocks = new HashMap<Location,ResistantBlock>();
-	private HashMap<String,AreaContest> ContestedAreas = new HashMap<String,AreaContest>();
-	private int resistIDCount = 0;
 	
 	
 	public void onEnable() {       
@@ -96,11 +88,6 @@ public class Clans extends JavaPlugin {
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
 		PlayersFile = new File("plugins/Clans/Players.yml");
-		//Areas File
-		AreasFile = new File("plugins/Clans/Areas.yml");
-		//Blacklist Area File
-		BlacklistFile = new File("plugins/Clans/BlacklistAreas.yml");
-		//Load Data From Files
 		loadData();
 		
 		//Count Online Team Players, Used during reloads
@@ -108,13 +95,6 @@ public class Clans extends JavaPlugin {
 		
 		//Clears inactive players and teams from the files
 		clearInactivity();
-		
-		if(config.UseScore() && config.UseAreas())
-		{
-			startScoreKeeper();
-		}
-		if(config.UseAreas() && config.isUPCleanse())
-			startCleansers();
 		
 		if(config.isAllowCapes())
 			addCapes();
@@ -125,8 +105,6 @@ public class Clans extends JavaPlugin {
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
 	}
 	public void onDisable() {
-		cleanseAllAreas();
-		ResetAllResistBlocks();
 		log.info("Clans disabled.");
 	}
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
@@ -138,7 +116,7 @@ public class Clans extends JavaPlugin {
             String PlayerName = player.getDisplayName();
             TeamPlayer tPlayer = Users.get(PlayerName);
             
-            if(commandName.equals("team") && args.length >= 1)
+            if(commandName.equals("pirate") && args.length >= 1)
             {
                 //Check Inputs, Cannot contain ' or "
                 if(args.length > 0)
@@ -158,24 +136,24 @@ public class Clans extends JavaPlugin {
             		 *	TEAM CREATE - Creates a team.
             		 * ============================================================================== */
             		case "CREATE": 
-            			if(!player.hasPermission("Clans.create")) {
-            				player.sendMessage(ChatColor.RED + "You must sign up on our forums at http://KingdomsMC.com and request membership in order to use this command.");
+            			if(!player.hasPermission("pirate.create")) {
+            				player.sendMessage(ChatColor.RED + "Arr you don't have access to create a pirate group.");
             				return true;
             			}
             			else if(args.length < 2) {//INVALID ARGUMENTS
-            				player.sendMessage(ChatColor.RED + "Invalid number of arguments.");
+            				player.sendMessage(ChatColor.RED + "Arr your group name needs to be longer.");
             				return true;
             			}
             			else if(tPlayer.hasTeam()) {//PLAYER HAS TEAM
-            				player.sendMessage(ChatColor.RED + "You are already in a team.");
+            				player.sendMessage(ChatColor.RED + "Arr you are already in a pirate group.");
             				return true;
             			}
             			else if(args[1].length() > 30 ){//MORE THAN 30 CHARACTERS
-            				player.sendMessage(ChatColor.RED + "Team names must be less than 30 characters.");
+            				player.sendMessage(ChatColor.RED + "Arr pirate group names must be less than 30 characters.");
             				return true;
             			}
             			else if(args[1].contains("@server") ){//MORE THAN 30 CHARACTERS
-            				player.sendMessage(ChatColor.RED + "Team names must not contain reserved words.");
+            				player.sendMessage(ChatColor.RED + "Arr pirate group names must not contain reserved words.");
             				return true;
             			}
             			else{ //CREATE TEAM
@@ -184,15 +162,15 @@ public class Clans extends JavaPlugin {
             				for(i=2;i<args.length;i++)
             					TeamName += " " + args[i];
             				if(Teams.containsKey(TeamName)) {
-            					player.sendMessage(ChatColor.RED + "A team with this name already exists, please choose another team name.");
+            					player.sendMessage(ChatColor.RED + "Arr a pirate group with this name already exists, please choose another name.");
             					return true;
             				}
             				//Set Player's Team to new Key
             				Users.get(PlayerName).setTeamKey(TeamName);
             				//Create New Team and Add to Teams
             				Teams.put(TeamName, new Team(PlayerName));
-            				player.sendMessage(ChatColor.GREEN + "Team [" + TeamName +"] successfully created!");
-            				player.sendMessage(ChatColor.GREEN + "Use /team tag <tag> to add a Team tag.");
+            				player.sendMessage(ChatColor.GREEN + "Pirate group [" + TeamName +"] successfully created!");
+            				player.sendMessage(ChatColor.GREEN + "Use /pirate tag <tag> to add a pirate tag.");
             				
             				saveTeams();
             			}
@@ -201,37 +179,37 @@ public class Clans extends JavaPlugin {
                      *	TEAM INVITE - Invites a player to the team
                      * ============================================================================== */   
             		case "INVITE": 
-            			if(!player.hasPermission("Clans.invite")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            			if(!player.hasPermission("Pirate.invite")) {
+            				player.sendMessage(ChatColor.RED + "Arr you do not have permission to use this command.");
             				return true;
             			}
             			else if(args.length != 2){ //NOT ENOUGH ARGS
-            				player.sendMessage(ChatColor.RED + "You didn't invite anyone.");
+            				player.sendMessage(ChatColor.RED + "Arr you didn't invite anyone.");
             				return true;
             			}
             			else if(!tPlayer.hasTeam()){ //NO TEAM
-            				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one.");
+            				player.sendMessage(ChatColor.RED + "Arr must have a pirate group to be able to invite someone.");
             				return true;
             			}
             			else if (!getRank(PlayerName).canInvite()) { //NOT ALLOWED TO INVITE
-            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team.");
+            				player.sendMessage(ChatColor.RED + "Arr your captain doesn't allow you to invite someone to this pirate group.");
             				return true;
             			}
             			
             			else if(!Users.containsKey(args[1])){ // INVITED NAME DOESN'T EXIST
-            				player.sendMessage(ChatColor.RED + "That player does not exist.");
+            				player.sendMessage(ChatColor.RED + "Arr that player does not exist.");
             				return true;
             			}
             			else{
             				TeamPlayer invitedPlayer = Users.get(args[1]);
             				if(invitedPlayer.hasTeam()){ // INVITED PLAYER HAS A TEAM
-            					player.sendMessage(ChatColor.RED + "Cannot invite: This player has a team already.");
+            					player.sendMessage(ChatColor.RED + "Arr cannot invite: This player is already in a pirate group.");
             					return true;
             				}
             				else{ // GIVE INVITE TO INVITED PLAYER
             					Users.get(args[1]).setInvite(tPlayer.getTeamKey());
-            					player.sendMessage(ChatColor.GREEN + "You have invited " + args[1] + " to your team.");
-            					getServer().getPlayer(args[1]).sendMessage(ChatColor.GREEN + "You have been invited to " + tPlayer.getTeamKey() +". Type /team accept to or /team reject to accept or deny this offer.");
+            					player.sendMessage(ChatColor.GREEN + "Arr you have invited " + args[1] + " to your pirate group.");
+            					getServer().getPlayer(args[1]).sendMessage(ChatColor.GREEN + "Arr you have been invited to " + tPlayer.getTeamKey() +". Type /pirate accept to or /pirate reject to accept or deny this offer.");
             				}
             			}
             			break;
@@ -239,20 +217,20 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM ACCEPT - Accepts an invite
                 	 * ============================================================================== */           		
             		case "ACCEPT": 	
-            			if(!player.hasPermission("Clans.accept")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            			if(!player.hasPermission("Pirate.accept")) {
+            				player.sendMessage(ChatColor.RED + "Arr you do not have permission to use this command.");
             				return true;
             			}
             			else if(tPlayer.hasTeam()){ // PLAYER HAS A TEAM
-            				player.sendMessage(ChatColor.RED + "You are already on a team.");
+            				player.sendMessage(ChatColor.RED + "Arr you are already in a pirate group.");
             				return true;
             			}
             			else if(tPlayer.getInvite() == ""){ //PLAYER HAS NO INVITATIONS
-            				player.sendMessage(ChatColor.RED + "You have not been invited to a team.");
+            				player.sendMessage(ChatColor.RED + "Arr you have not been invited to a pirate group.");
             				return true;
             			}
             			else { //ACCEPT INVITATION
-            				player.sendMessage(ChatColor.GREEN + "You have accepted the invitation from " + tPlayer.getInvite() + ".");
+            				player.sendMessage(ChatColor.GREEN + "Arr you have accepted the invitation from " + tPlayer.getInvite() + ".");
             				teamAdd(PlayerName);
             				saveTeams();
             			}
@@ -261,16 +239,16 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM REJECT - Rejects an invite
                 	 * ============================================================================== */            		
             		case "REJECT": 
-            			if(!player.hasPermission("Clans.reject")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            			if(!player.hasPermission("Pirate.reject")) {
+            				player.sendMessage(ChatColor.RED + "Arr you do not have permission to use this command.");
             				return true;
             			}
             			else if(!tPlayer.hasInvite()){
-        					player.sendMessage(ChatColor.RED + "You do not have an invite to reject.");
+        					player.sendMessage(ChatColor.RED + "Arr you do not have an invite to reject.");
         					return true;
         				}
         				else{
-        					player.sendMessage(ChatColor.RED + "You have rejected the offer from '" + tPlayer.getInvite() + "'.");
+        					player.sendMessage(ChatColor.RED + "Arr you have rejected the offer from '" + tPlayer.getInvite() + "'.");
         					Users.get(PlayerName).clearInvite();
         				}        				
             			break;
@@ -278,12 +256,12 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM LIST - Lists all teams
                 	 * ============================================================================== */
             		case "LIST": 
-            			if(!player.hasPermission("Clans.list")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            			if(!player.hasPermission("Pirate.list")) {
+            				player.sendMessage(ChatColor.RED + "Arr you do not have permission to use this command.");
             				return true;
             			}
             			else if(args.length != 1){//INVALID ARGUMENTS
-            				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team list");
+            				player.sendMessage(ChatColor.RED + "Arr invalid use of command. Proper use is /pirate list");
             			}
             			else{//GET TEAM LIST
             				for(String key : Teams.keySet()){
@@ -297,20 +275,20 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM INFO - Prints info about a team
                 	 * ============================================================================== */
             		case "INFO": 
-            			if(!player.hasPermission("Clans.info")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            			if(!player.hasPermission("Pirate.info")) {
+            				player.sendMessage(ChatColor.RED + "Arr you do not have permission to use this command.");
             				return true;
             			}
             			else if(args.length == 1){//DISPLAY YOUR TEAM INFO
             				 if(!tPlayer.hasTeam()){//DOESNT HAVE TEAM
-            					 player.sendMessage(ChatColor.RED + "You are not in a team. Use /team info <TEAMNAME> to look up a team's info.");
+            					 player.sendMessage(ChatColor.RED + "Arr you are not in a team. Use /pirate info <NAME> to look up a pirate groups info.");
             					 return true;
             				 }
             				 else {//DISPLAY INFO
             					 Team team = Teams.get(tPlayer.getTeamKey());
-            					 player.sendMessage(team.getColor() + "[" + tPlayer.getTeamKey() + "]" + " Team Info" );
+            					 player.sendMessage(team.getColor() + "[" + tPlayer.getTeamKey() + "]" + " Pirate Group Info" );
             					 if(config.UseScore())
-            						 player.sendMessage(team.getColor() + "Team Score: " + team.getTeamScore() );
+            						 player.sendMessage(team.getColor() + "Pirate group Score: " + team.getTeamScore() );
             					 ArrayList<String> teamInfo = team.getTeamInfo();
             					 for(String s : teamInfo)
             						 player.sendMessage(s);
@@ -322,14 +300,14 @@ public class Clans extends JavaPlugin {
             				for (i=2;i<args.length;i++)
             					TeamName += " " + args[i];
             				if(!Teams.containsKey(TeamName)) {//NAME DOESNT EXIST
-            					player.sendMessage(ChatColor.RED + "Team '"+TeamName+"' does not exist.");
+            					player.sendMessage(ChatColor.RED + "Arr pirate group '"+TeamName+"' does not exist.");
             					return true;
             				}
             				else {
             					Team team = Teams.get(TeamName);
-            					player.sendMessage(team.getColor() + "[" + TeamName + "]" + " Team Info" );
+            					player.sendMessage("Arr"+ team.getColor() + "[" + TeamName + "]" + " Pirate Group Info" );
            					 	if(config.UseScore())
-           					 		player.sendMessage(team.getColor() + "Team Score: " + team.getTeamScore() );
+           					 		player.sendMessage(team.getColor() + "Arr Pirate Group Score: " + team.getTeamScore() );
            					 	ArrayList<String> teamInfo = team.getTeamInfo();
            					 	for(String s : teamInfo)
            					 		player.sendMessage(s);
